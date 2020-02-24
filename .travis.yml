@@ -1,7 +1,7 @@
 language: python
 
 python:
-  - 3.5
+  - 3.6.5
 
 addons:
   - postgresql: "9.6"
@@ -22,32 +22,4 @@ env:
   - DJ_DEBUG=False
   - DATABASE_URL=postgres://postgres@localhost/eretail
 
-script: python eretail/manage.py test --keepdb
-
-after_success:
-    - coveralls
-
-
-
-
-# language: python
-# python:
-#     - "3.6.5"
-#
-# install:
-#     - pip install -r requirements.txt
-#
-# services:
-#     - postgresql
-#
-# before_script:
-#     - psql -c "CREATE DATABASE eretail;" -U postgres
-#     - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to postgres ;" -U postgres
-#     - export DATABASE="dbname=eretail host=localhost port=5432 user=postgres password=''"
-#
-# script:
-#     - pytest
-#     - coverage run --source=app -m pytest && coverage report
-#
-# after_success:
-#     - coveralls
+script: python eretail/manage.py test
