@@ -33,19 +33,20 @@ class TestProduct(APITestCase):
     @pytest.mark.django_db
     def test_a_registered_user_can_create_a_product(self):
         response = self.client.post('/api/jwtauth/register/',data=json.dumps(self.user_data),content_type='application/json')
-        headers = {'HTTP_AUTHORIZATION': str(response.data['access'])}
-        print("Header: ",headers)
+        token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
 
-        response = self.client.post('/api/products/', headers=headers, data=json.dumps(self.product_data), content_type='application/json')
+        response = self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'A product has been created')
 
     @pytest.mark.django_db
     def test_can_get_created_products(self):
         response = self.client.post('/api/jwtauth/register/', data=json.dumps(self.user_data),content_type='application/json')
-        header = {"Authorization": response.data['access']}
-
-        response = self.client.get('/api/products/product-list/', headers=header, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK, 'A product exists')
+        token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+        product_resp = self.client.get('/api/products/')
+        self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'A product exists')
 
 
 
