@@ -22,4 +22,4 @@ env:
   - DJ_DEBUG=False
   - DATABASE_URL=postgres://postgres@localhost/eretail
 
-script: python eretail/manage.py test
+script: python manage.py test
