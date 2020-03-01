@@ -31,6 +31,12 @@ class TestProduct(APITestCase):
             "product_quantity": 200
         }
 
+        self.product_data_no_key = {
+            "product_description": "Mumias Sugar",
+            "product_price": 500,
+            "product_quantity": 200
+        }
+
         self.product_data_update = {
         	"product_name": "1KG Sugar",
             "product_description": "Mumias Sugar",
@@ -73,6 +79,13 @@ class TestProduct(APITestCase):
         self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
         product_resp = self.client.put('/api/products/1/', data=json.dumps(self.product_data_update), content_type='application/json')
         self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'Product can be updated')
+
+    @pytest.mark.django_db
+    def test_dont_create_with_missing_key(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        product_resp = self.client.post('/api/products/', data=json.dumps(self.product_data_no_key), content_type='application/json')
+        self.assertEqual(product_resp.status_code, status.HTTP_400_BAD_REQUEST, 'Product can be updated')
 
 
 
