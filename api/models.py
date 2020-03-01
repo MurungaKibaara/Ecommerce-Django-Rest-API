@@ -9,4 +9,3 @@ class Product(models.Model):
     product_description = models.TextField(max_length=200)
     product_price = models.FloatField()
     product_quantity = models.IntegerField()
-    slug = models.SlugField(max_length=200 , db_index=True , unique=True, blank=True)

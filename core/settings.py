@@ -69,15 +69,12 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     }
 
-
 #This is required otherwise it asks for email server
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_EMAIL_REQUIRED = True
 AUTHENTICATION_METHOD = 'EMAIL'
-# ACCOUNT_EMAIL_VERIFICATION = 'optional'
 AUTH_USER_MODEL = 'accounts.User'
 
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 
@@ -126,14 +123,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'ENGINE':   'django.db.backends.postgresql_psycopg2',
-        # 'NAME':     'eretail',
-        # 'USER':     'eretail',
-        # 'PASSWORD': 'eretailpassword',
-        # 'HOST':     'localhost',
-        # 'PORT':     '5432',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE':   'django.db.backends.postgresql_psycopg2',
+        'NAME':     'eretail',
+        'USER':     'eretail',
+        'PASSWORD': 'eretailpassword',
+        'HOST':     'localhost',
+        'PORT':     '5432',
     }
 }
 
