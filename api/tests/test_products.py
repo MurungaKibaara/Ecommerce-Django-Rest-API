@@ -24,8 +24,19 @@ class TestProduct(APITestCase):
         	"password2":"securepassword"
         }
 
-        # self.user_data = {"username": "test@testmail.com", "email": "test@testmail.com","password": "test","password2": "test"}
-        self.product_data = {"product_id":1, "product_name": "Test Product","product_description": "Best product in town","product_price": 10,"product_quantity": 5}
+        self.product_data = {
+        	"product_name": "1KG Sugar",
+            "product_description": "Mumias Sugar",
+            "product_price": 198,
+            "product_quantity": 200
+        }
+
+        self.product_data_update = {
+        	"product_name": "1KG Sugar",
+            "product_description": "Mumias Sugar",
+            "product_price": 500,
+            "product_quantity": 200
+        }
 
     @pytest.mark.django_db
     def create_user(self):
@@ -47,6 +58,22 @@ class TestProduct(APITestCase):
         self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
         product_resp = self.client.get('/api/products/')
         self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'A product exists')
+
+    @pytest.mark.django_db
+    def test_dont_update_products_that_dont_exist(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        product_resp = self.client.put('/api/products/1/', data=json.dumps(self.product_data), content_type='application/json')
+        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'Product does not exist')
+
+    @pytest.mark.django_db
+    def test_can_update_existing_products(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+        product_resp = self.client.put('/api/products/1/', data=json.dumps(self.product_data_update), content_type='application/json')
+        self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'Product can be updated')
+
 
 
 
