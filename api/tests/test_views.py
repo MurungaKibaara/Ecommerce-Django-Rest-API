@@ -28,30 +28,21 @@ class TestProduct(APITestCase):
         self.product_data = {"product_id":1, "product_name": "Test Product","product_description": "Best product in town","product_price": 10,"product_quantity": 5}
 
     @pytest.mark.django_db
-    def test_can_create_user(self):
-        create_user_response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
-        self.assertEqual(create_user_response.status_code, status.HTTP_201_CREATED, 'A user can be registered')
-
-    @pytest.mark.django_db
-    def test_can_login_created_user(self):
-        create_user_response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
-
-        response = self.client.post('/api/accounts/token/',data=json.dumps(self.user_data),content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK, 'A user can be logged in')
+    def create_user(self):
+        response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
+        token = response.data['access']
+        return token
 
     @pytest.mark.django_db
     def test_a_registered_user_can_create_a_product(self):
-        response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
-        token = response.data['access']
+        token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
-
         response = self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'A product has been created')
 
     @pytest.mark.django_db
     def test_can_get_created_products(self):
-        response = self.client.post('/api/accounts/register/', data=json.dumps(self.user_data),content_type='application/json')
-        token = response.data['access']
+        token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
         self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
         product_resp = self.client.get('/api/products/')
