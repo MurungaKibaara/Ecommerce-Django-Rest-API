@@ -131,78 +131,18 @@ class TestProduct(APITestCase):
 
         token2 = self.create_user2()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token2)
-        self.client.get('/api/products/')
 
         product_resp = self.client.get('/api/products/1/')
         self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot access another users products')
 
+    @pytest.mark.django_db
+    def test_diffrent_product_owners_update(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
 
+        token2 = self.create_user2()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token2)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# @pytest.mark.django_db
-# def test_can_get_product_list(self):
-#     # url = reverse('product-list')
-#     response = self.client.get('/api/products/product-list/')
-#     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, 'no products in the list')
-
-
-# class APIAdminAPITestCase(APITestCase):
-#     @pytest.mark.django_db
-#     def setUp(self):
-#         self.user = UserModel.objects.create_superuser(
-#             username='test', email='test@est@testmail.com', password='top_secret')
-#         token = Token.objects.create(user=self.user)
-#         self.client = APIClient()
-#         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-#         print(token)
-#
-
-
-#
-# class TestProductList(APITestCase):
-#     @pytest.mark.django_db
-#     def test_can_get_product_list(self):
-#         # url = reverse('api:product-list')
-#         response = self.client.get('/api/products/product-list/')
-#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, 'no products in the list')
-#
-#     @pytest.mark.django_db
-#     def test_can_create_product(self):
-#         # url = reverse('api:product-list')
-#         response = self.client.get('/api/products/product-list/')
-#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND, 'no products in the list')
+        product_resp = self.client.put('/api/products/1/', data=json.dumps(self.product_data), content_type='application/json')
+        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot update another users products')
