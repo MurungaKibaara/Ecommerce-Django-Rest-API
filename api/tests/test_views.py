@@ -15,24 +15,32 @@ class TestProduct(APITestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.user_data = {"username": "test@testmail.com", "email": "test@testmail.com","password": "test","password2": "test"}
+        self.user_data = {
+            	"email":"murungakibaara@gmail.com",
+            	"username":"MurungaKibaara",
+            	"name":"Murunga Kibaara",
+            	"password":"securepassword",
+            	"password2":"securepassword"
+            }
+
+        # self.user_data = {"username": "test@testmail.com", "email": "test@testmail.com","password": "test","password2": "test"}
         self.product_data = {"product_id":1, "product_name": "Test Product","product_description": "Best product in town","product_price": 10,"product_quantity": 5}
 
     @pytest.mark.django_db
     def test_can_create_user(self):
-        create_user_response = self.client.post('/api/jwtauth/register/',data=json.dumps(self.user_data),content_type='application/json')
+        create_user_response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
         self.assertEqual(create_user_response.status_code, status.HTTP_201_CREATED, 'A user can be registered')
 
     @pytest.mark.django_db
     def test_can_login_created_user(self):
-        create_user_response = self.client.post('/api/jwtauth/register/',data=json.dumps(self.user_data),content_type='application/json')
+        create_user_response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
 
-        response = self.client.post('/api/token/',data=json.dumps(self.user_data),content_type='application/json')
+        response = self.client.post('/api/accounts/token/',data=json.dumps(self.user_data),content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK, 'A user can be logged in')
 
     @pytest.mark.django_db
     def test_a_registered_user_can_create_a_product(self):
-        response = self.client.post('/api/jwtauth/register/',data=json.dumps(self.user_data),content_type='application/json')
+        response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
         token = response.data['access']
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
 
@@ -41,7 +49,7 @@ class TestProduct(APITestCase):
 
     @pytest.mark.django_db
     def test_can_get_created_products(self):
-        response = self.client.post('/api/jwtauth/register/', data=json.dumps(self.user_data),content_type='application/json')
+        response = self.client.post('/api/accounts/register/', data=json.dumps(self.user_data),content_type='application/json')
         token = response.data['access']
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
         self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')

@@ -11,6 +11,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "username",
+            "name",
             "email",
             "password",
             "password2"
