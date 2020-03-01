@@ -16,12 +16,13 @@ class TestProduct(APITestCase):
         self.client = APIClient()
 
         self.user_data = {
-            	"email":"murungakibaara@gmail.com",
-            	"username":"MurungaKibaara",
-            	"name":"Murunga Kibaara",
-            	"password":"securepassword",
-            	"password2":"securepassword"
-            }
+        	"role":"manufacturer",
+        	"email":"murungaephantus@gmail.com",
+        	"username":"murungaephantus",
+        	"name":"Murunga Kibaara",
+        	"password":"securepassword",
+        	"password2":"securepassword"
+        }
 
         # self.user_data = {"username": "test@testmail.com", "email": "test@testmail.com","password": "test","password2": "test"}
         self.product_data = {"product_id":1, "product_name": "Test Product","product_description": "Best product in town","product_price": 10,"product_quantity": 5}
