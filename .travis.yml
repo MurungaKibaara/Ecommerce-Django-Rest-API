@@ -15,11 +15,11 @@ install:
 
 before_script:
   - psql -c "CREATE DATABASE eretail;" -U postgres
-  - python eretail/manage.py migrate --noinput
+  - python manage.py migrate --noinput
 
 env:
   - Django==3.0.3
   - DJ_DEBUG=False
   - DATABASE_URL=postgres://postgres@localhost/eretail
 
-script: python eretail/manage.py test
+script: pytest
