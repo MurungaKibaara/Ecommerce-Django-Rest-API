@@ -24,6 +24,15 @@ class TestProduct(APITestCase):
         	"password2":"securepassword"
         }
 
+        self.user2_data = {
+        	"role":"customer",
+        	"email":"murungakibaara@gmail.com",
+        	"username":"murungaephantus",
+        	"name":"Murunga Kibaara",
+        	"password":"securepassword",
+        	"password2":"securepassword"
+        }
+
         self.product_data = {
         	"product_name": "1KG Sugar",
             "product_description": "Mumias Sugar",
@@ -49,6 +58,13 @@ class TestProduct(APITestCase):
         response = self.client.post('/api/accounts/register/',data=json.dumps(self.user_data),content_type='application/json')
         token = response.data['access']
         return token
+
+    @pytest.mark.django_db
+    def create_user2(self):
+        response = self.client.post('/api/accounts/register/',data=json.dumps(self.user2_data),content_type='application/json')
+        token = response.data['access']
+        return token
+
 
     @pytest.mark.django_db
     def test_a_registered_user_can_create_a_product(self):
@@ -86,6 +102,39 @@ class TestProduct(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
         product_resp = self.client.post('/api/products/', data=json.dumps(self.product_data_no_key), content_type='application/json')
         self.assertEqual(product_resp.status_code, status.HTTP_400_BAD_REQUEST, 'Product can be updated')
+
+    @pytest.mark.django_db
+    def test_non_logged_in_cant_create(self):
+        product_resp = self.client.post('/api/products/', data=json.dumps(self.product_data_no_key), content_type='application/json')
+        self.assertEqual(product_resp.status_code, status.HTTP_400_BAD_REQUEST, 'Non user cant create products')
+
+    @pytest.mark.django_db
+    def test_empty_returns_404(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        product_resp = self.client.get('/api/products/1/')
+        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'Product can be updated')
+
+    @pytest.mark.django_db
+    def test_return_one_product(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+        product_resp = self.client.get('/api/products/1/')
+        self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'Product can be updated')
+
+    @pytest.mark.django_db
+    def test_diffrent_product_owners_read(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+
+        token2 = self.create_user2()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token2)
+        self.client.get('/api/products/')
+
+        product_resp = self.client.get('/api/products/1/')
+        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot access another users products')
 
 
 
