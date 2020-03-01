@@ -1,25 +1,15 @@
 language: python
-
 python:
   - 3.6.5
-
-addons:
-  - postgresql: "9.6"
-
-before_install:
-  - export DJ_DEBUG=False
-  - export DABATASE_URL=postgres://postgres@localhost/eretail
-
+services:
+  - postgresql
 install:
+  - pip install -U pip wheel
   - pip install -r requirements.txt
-
 before_script:
-  - psql -c "CREATE DATABASE eretail;" -U postgres
-  - python manage.py migrate --noinput
-
-env:
-  - Django==3.0.3
-  - DJ_DEBUG=False
-  - DATABASE_URL=postgres://postgres@localhost/eretail
-
-script: pytest
+  - flake8 djangopeople
+  - flake8 tests
+script:
+  - psql -c 'CREATE DATABASE eretail;' -U postgres
+  - pytest
+cache: pip
