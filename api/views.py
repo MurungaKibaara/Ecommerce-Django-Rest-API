@@ -13,11 +13,16 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = (IsOwner,)
 
+
+    # Customers & Traders can view all Products
+    # Else view products that the user created
+
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            return Product.objects.all()
-            # filter(owner=user)
+            if user.role == 'customer' or user.role == 'trader':
+                return Product.objects.all()
+            return Product.objects.filter(owner=user)
         raise PermissionDenied()
 
     # Set user as owner of a Product object.
