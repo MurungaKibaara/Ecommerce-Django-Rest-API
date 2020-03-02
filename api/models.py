@@ -23,7 +23,7 @@ class Order(models.Model):
         ('cancelled', 'cancelled'),)
 
     order = models.AutoField(primary_key=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) #Customer, Trader
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     order_quantity = models.IntegerField()
     order_date = models.DateField(default=timezone.now)
@@ -32,8 +32,12 @@ class Order(models.Model):
     REQUIRED_FIELDS = ['product_id','order_status','owner']
 
 class Sale(models.Model):
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     delivery_id =  models.AutoField(primary_key=True)
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
     confirm_date = models.DateTimeField(default=timezone.now)
     delivery_date = models.DateTimeField()
     reference = models.CharField(max_length=20, unique=True)
+
+    REQUIRED_FIELDS = ['order_id','owner']
