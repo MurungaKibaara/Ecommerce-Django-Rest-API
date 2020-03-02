@@ -24,8 +24,35 @@ class TestProduct(APITestCase):
         	"password2":"securepassword"
         }
 
-        self.user2_data = {
+        self.user3_data = {
         	"role":"customer",
+        	"email":"murungaephantusk@gmail.com",
+        	"username":"murungaephantus",
+        	"name":"Murunga Kibaara",
+        	"password":"securepassword",
+        	"password2":"securepassword"
+        }
+
+        self.user2_data = {
+        	"role":"manufacturer",
+        	"email":"murungakibaara@gmail.com",
+        	"username":"murungaephantus",
+        	"name":"Murunga Kibaara",
+        	"password":"securepassword",
+        	"password2":"securepassword"
+        }
+
+        self.user4_data = {
+        	"role":"trader",
+        	"email":"murungakibaara@gmail.com",
+        	"username":"murungaephantus",
+        	"name":"Murunga Kibaara",
+        	"password":"securepassword",
+        	"password2":"securepassword"
+        }
+
+        self.user5_data = {
+        	"role":"wholesaler",
         	"email":"murungakibaara@gmail.com",
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
@@ -62,6 +89,24 @@ class TestProduct(APITestCase):
     @pytest.mark.django_db
     def create_user2(self):
         response = self.client.post('/api/accounts/register/',data=json.dumps(self.user2_data),content_type='application/json')
+        token = response.data['access']
+        return token
+
+    @pytest.mark.django_db
+    def create_user3(self):
+        response = self.client.post('/api/accounts/register/',data=json.dumps(self.user3_data),content_type='application/json')
+        token = response.data['access']
+        return token
+
+    @pytest.mark.django_db
+    def create_user4(self):
+        response = self.client.post('/api/accounts/register/',data=json.dumps(self.user4_data),content_type='application/json')
+        token = response.data['access']
+        return token
+
+    @pytest.mark.django_db
+    def create_user5(self):
+        response = self.client.post('/api/accounts/register/',data=json.dumps(self.user5_data),content_type='application/json')
         token = response.data['access']
         return token
 
@@ -166,3 +211,24 @@ class TestProduct(APITestCase):
 
         product_resp = self.client.delete('/api/products/1/', data=json.dumps(self.product_data), content_type='application/json')
         self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot delete another users products')
+
+    @pytest.mark.django_db
+    def test_a_customer_cannot_create_a_product(self):
+        token = self.create_user3()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        response = self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'A product cannot be be created')
+
+    @pytest.mark.django_db
+    def test_a_trader_cannot_create_a_product(self):
+        token = self.create_user4()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        response = self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'A product cannot be be created')
+
+    @pytest.mark.django_db
+    def test_a_wholesaler_can_create_a_product(self):
+        token = self.create_user5()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        response = self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'A product cannot be be created')

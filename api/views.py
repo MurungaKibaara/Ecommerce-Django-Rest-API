@@ -15,10 +15,19 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
+        if user.is_authenticated and user.role == 'manufacturer' or user.role != 'wholesaler':
+            print(user.role)
             return Product.objects.filter(owner=user)
         raise PermissionDenied()
 
     # Set user as owner of a Product object.
+    # Customers and traders cannot create products
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        user = self.request.user
+        if user.is_authenticated:
+            print("User role", user.role)
+            if user.role == 'customer' or user.role == 'trader':
+                raise PermissionDenied()
+                return False
+            return serializer.save(owner=self.request.user)
+        raise PermissionDenied()
