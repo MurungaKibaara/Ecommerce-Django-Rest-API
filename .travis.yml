@@ -9,4 +9,5 @@ install:
 script:
   - psql -c 'CREATE DATABASE eretail;' -U postgres
   - pytest
+  - coverage run --source=api -m pytest && coverage report
 cache: pip
