@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.exceptions import PermissionDenied
 from .models import Product
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, OrderSerializer
 
 class IsOwner(permissions.BasePermission):
 
@@ -14,10 +14,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwner,)
 
 
-    # Customers & Traders can view all Products
-    # Else view products that the user created
-
     def get_queryset(self):
+
+        '''
+            - Customers and small traders can view all the Products.
+            - Wholesalers and Manufacturers can only view the products they own.
+        '''
+
+
         user = self.request.user
         if user.is_authenticated:
             if user.role == 'customer' or user.role == 'trader':
@@ -28,10 +32,43 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Set user as owner of a Product object.
     # Customers and traders cannot create products
     def perform_create(self, serializer):
+
+        '''
+            - Customers and small traders cannot create Products.
+        '''
+
         user = self.request.user
         if user.is_authenticated:
             print("User role", user.role)
             if user.role == 'customer' or user.role == 'trader':
+                raise PermissionDenied()
+                return False
+            return serializer.save(owner=self.request.user)
+        raise PermissionDenied()
+
+class OrderViewSet(viewsets.ModelViewSet):
+
+    '''
+        - Customers and small traders can only view the products they have created.
+        - Manufacturers and wholesalers cannot create orders.
+    '''
+
+    serializer_class = OrderSerializer
+    permission_classes = (IsOwner,)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            if user.role == 'manufacturer' or user.role == 'wholesaler' or user.role == 'admin':
+                return Order.objects.all()
+            return Order.objects.filter(owner=user)
+        raise PermissionDenied()
+
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.is_authenticated:
+            if user.role == 'manufacturer' or user.role == 'wholesaler':
                 raise PermissionDenied()
                 return False
             return serializer.save(owner=self.request.user)

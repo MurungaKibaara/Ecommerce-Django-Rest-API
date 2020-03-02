@@ -21,7 +21,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user3_data = {
@@ -30,7 +31,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user2_data = {
@@ -39,7 +41,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user4_data = {
@@ -48,7 +51,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user5_data = {
@@ -57,7 +61,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.product_data = {
