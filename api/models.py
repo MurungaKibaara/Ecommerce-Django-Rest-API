@@ -17,18 +17,23 @@ class Product(models.Model):
 class Order(models.Model):
     STATUS = Choices(
         ('cart', 'cart'),
+        ('confirmed', 'confirmed'),
+        ('to_deliver', 'to_deliver'),
         ('delivered', 'delivered'),
         ('cancelled', 'cancelled'),)
 
-    def delivery_time():
-        return timezone.now() + timezone.timedelta(days=7)
-
     order = models.AutoField(primary_key=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) #Customer, Trader
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     order_quantity = models.IntegerField()
-    order_date = models.DateField(default=datetime.now())
-    expected_delivery_date = models.DateTimeField(default=delivery_time)
-    order_status = models.CharField(max_length=9, choices=STATUS)
+    order_date = models.DateField(default=timezone.now)
+    order_status = models.CharField(max_length=10, choices=STATUS)
 
-    REQUIRED_FIELDS = ['product','order_status','owner']
+    REQUIRED_FIELDS = ['product_id','order_status','owner']
+
+class Sale(models.Model):
+    delivery_id =  models.AutoField(primary_key=True)
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
+    confirm_date = models.DateTimeField(default=timezone.now)
+    delivery_date = models.DateTimeField()
+    reference = models.CharField(max_length=20, unique=True)
