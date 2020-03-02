@@ -146,3 +146,23 @@ class TestProduct(APITestCase):
 
         product_resp = self.client.put('/api/products/1/', data=json.dumps(self.product_data), content_type='application/json')
         self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot update another users products')
+
+    @pytest.mark.django_db
+    def test_a_user_can_delete_a_product(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+        product_resp = self.client.delete('/api/products/1/')
+        self.assertEqual(product_resp.status_code, status.HTTP_204_NO_CONTENT, 'A user can delete a product')
+
+    @pytest.mark.django_db
+    def test_delete_diffrent_owner_products(self):
+        token = self.create_user()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/products/', data=json.dumps(self.product_data), content_type='application/json')
+
+        token2 = self.create_user2()
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token2)
+
+        product_resp = self.client.delete('/api/products/1/', data=json.dumps(self.product_data), content_type='application/json')
+        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot delete another users products')
