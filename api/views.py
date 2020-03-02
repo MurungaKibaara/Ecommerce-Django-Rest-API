@@ -15,9 +15,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated and user.role == 'manufacturer' or user.role != 'wholesaler':
-            print(user.role)
-            return Product.objects.filter(owner=user)
+        if user.is_authenticated:
+            return Product.objects.all()
+            # filter(owner=user)
         raise PermissionDenied()
 
     # Set user as owner of a Product object.

@@ -178,7 +178,7 @@ class TestProduct(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token2)
 
         product_resp = self.client.get('/api/products/1/')
-        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot access another users products')
+        self.assertEqual(product_resp.status_code, status.HTTP_403_FORBIDDEN, 'A user cannot access another users products')
 
     @pytest.mark.django_db
     def test_diffrent_product_owners_update(self):
@@ -190,7 +190,7 @@ class TestProduct(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token2)
 
         product_resp = self.client.put('/api/products/1/', data=json.dumps(self.product_data), content_type='application/json')
-        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot update another users products')
+        self.assertEqual(product_resp.status_code, status.HTTP_403_FORBIDDEN, 'A user cannot update another users products')
 
     @pytest.mark.django_db
     def test_a_user_can_delete_a_product(self):
@@ -210,7 +210,7 @@ class TestProduct(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token2)
 
         product_resp = self.client.delete('/api/products/1/', data=json.dumps(self.product_data), content_type='application/json')
-        self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'A user cannot delete another users products')
+        self.assertEqual(product_resp.status_code, status.HTTP_403_FORBIDDEN, 'A user cannot delete another users products')
 
     @pytest.mark.django_db
     def test_a_customer_cannot_create_a_product(self):
