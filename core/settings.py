@@ -23,7 +23,7 @@ SECRET_KEY = 'nz=c6_skk&$%9(!=76u(emza-x-*vx0an_*=+v93_pd-5@)3of'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
