@@ -13,16 +13,18 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_status = ChoiceField(choices=Order.STATUS)
-    product_id = ProductSerializer(source='Product', read_only=True, many=True)
+    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
 
     class Meta:
         model = Order
-        fields = ('order_id','product_id','order_quantity','order_date','order_status')
+        depth=1
+        fields = ('order','product_id','order_quantity','order_date','order_status')
 
 
 class SaleSerializer(serializers.ModelSerializer):
-    order_id = OrderSerializer(source='Order', many=True)
+    order_status = ChoiceField(choices=Sale.SALE_STATUS)
+    order_id = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all())
 
     class Meta:
-        order = Sale
-        fields = ('order_id','delivery_id','delivery_date' 'confirm_date','reference' )
+        model = Sale
+        fields = ('order_id','delivery_id','delivery_date', 'confirm_date','reference','order_status')

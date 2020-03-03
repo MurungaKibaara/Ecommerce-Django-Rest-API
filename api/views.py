@@ -47,11 +47,13 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = (IsOwner,)
 
+
+
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            if user.role == 'manufacturer' or user.role == 'wholesaler' or user.role == 'admin':
-                return Order.objects.all()
+            if user.role == 'manufacturer' or user.role == 'wholesaler':
+                return Order.objects.filter(product_id__owner=user)
             return Order.objects.filter(owner=user)
         raise PermissionDenied()
 
@@ -61,7 +63,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         if user.is_authenticated:
             if user.role == 'manufacturer' or user.role == 'wholesaler':
                 raise PermissionDenied()
-                return False
             return serializer.save(owner=self.request.user)
         raise PermissionDenied()
 
@@ -78,17 +79,21 @@ class SaleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            if user.role == 'manufacturer' or user.role == 'wholesaler' or user.role == 'admin':
-                return Sale.objects.all()
-            return Sale.objects.filter(owner=user)
+            if user.role is not 'manufacturer' or user.role is not 'trader':
+                return Sale.objects.filter(order_id__product_id__owner=user)
+            raise PermissionDenied()
         raise PermissionDenied()
-
 
     def perform_create(self, serializer):
         user = self.request.user
+        data=serializer.validated_data
         if user.is_authenticated:
             if user.role == 'manufacturer' or user.role == 'wholesaler':
-                raise PermissionDenied()
-                return False
-            return serializer.save(owner=self.request.user)
+                orders = Order.objects.filter(product_id__owner=user)
+                for order in orders:
+                    print("Order Numbers",order.order, data['order_id'])
+                    if order.order != data['order_id'] and order.order_status is not 'cancelled':
+                        return
+                    return serializer.save(owner=self.request.user)
+            raise PermissionDenied()
         raise PermissionDenied()

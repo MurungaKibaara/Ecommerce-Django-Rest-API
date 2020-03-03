@@ -12,7 +12,7 @@ from ..models import Product
 
 UserModel = get_user_model()
 
-class TestOrders(APITestCase):
+class TestSales(APITestCase):
     def setUp(self):
         self.client = APIClient()
 
@@ -26,11 +26,6 @@ class TestOrders(APITestCase):
             "region":"Nairobi"
         }
 
-        self.user_login_data = {
-            "email":"test@test.com",
-            "password":"test",
-        }
-
         self.user2_data = {
         	"role":"trader",
         	"email":"murungaephantusk@gmail.com",
@@ -39,6 +34,11 @@ class TestOrders(APITestCase):
         	"password":"securepassword",
         	"password2":"securepassword",
             "region":"Nairobi"
+        }
+
+        self.user_login_data = {
+            "email":"test@test.com",
+            "password":"test",
         }
 
         self.product_data = {
@@ -55,12 +55,6 @@ class TestOrders(APITestCase):
             "order_quantity": 200
         }
 
-        self.order_data_key_missing = {
-            "order_status": "cart",
-            "product_price": 110,
-            "order_quantity": 200
-        }
-
         self.sale_data = {
         	"order_id": 1,
             "order_status": "confirmed",
@@ -68,7 +62,6 @@ class TestOrders(APITestCase):
         }
 
         self.sale_data_no_key = {
-        	"order_id": 1,
             "order_status": "confirmed",
             "reference": 111
         }
@@ -80,31 +73,37 @@ class TestOrders(APITestCase):
         }
 
     @pytest.mark.django_db
-    def test_not_create_order_not_logged_in(self):
+    def test_not_create_sale_not_logged_in(self):
 
         user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
         product = mixer.blend('api.Product', owner=user)
+        order = mixer.blend('api.Order', Product=product, owner=customer)
 
-        response = self.client.post('/api/orders/', self.order_data, format='json')
+        datas = json.dumps(self.user_login_data)
+
+        response = self.client.post('/api/sales/', self.sale_data, format='json')
         assert response.status_code == 403
 
     @pytest.mark.django_db
-    def test_not_get_order_data_not_logged_in(self):
+    def test_not_get_sale_data_not_logged_in(self):
 
         user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
         product = mixer.blend('api.Product', owner=user)
+        order = mixer.blend('api.Order', Product=product, owner=customer)
 
-        response = self.client.get('/api/orders/')
+        response = self.client.get('/api/sales/')
         assert response.status_code == 403
 
-    @pytest.mark.django_db
-    def test_not_create_order_key_missing(self):
+        @pytest.mark.django_db
+        def test_not_create_sale_key_missing(self):
+            user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
+            customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
+            product = mixer.blend('api.Product', owner=user)
+            order = mixer.blend('api.Order', Product=product, owner=customer)
 
-        user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
-        customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
-        product = mixer.blend('api.Product', owner=user)
+            datas = json.dumps(self.user_login_data)
 
-        response = self.client.post('/api/orders/', self.order_data_key_missing, format='json')
-        assert response.status_code == 400
+            response = self.client.post('/api/sales/', self.sale_data_no_key, format='json')
+            assert response.status_code == 400
