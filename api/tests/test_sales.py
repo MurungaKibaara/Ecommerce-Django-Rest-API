@@ -96,14 +96,14 @@ class TestSales(APITestCase):
         response = self.client.get('/api/sales/')
         assert response.status_code == 403
 
-        @pytest.mark.django_db
-        def test_not_create_sale_key_missing(self):
-            user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
-            customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
-            product = mixer.blend('api.Product', owner=user)
-            order = mixer.blend('api.Order', Product=product, owner=customer)
+    @pytest.mark.django_db
+    def test_not_create_sale_key_missing(self):
+        user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
+        customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
+        product = mixer.blend('api.Product', owner=user)
+        order = mixer.blend('api.Order', Product=product, owner=customer)
 
-            datas = json.dumps(self.user_login_data)
+        datas = json.dumps(self.user_login_data)
 
-            response = self.client.post('/api/sales/', self.sale_data_no_key, format='json')
-            assert response.status_code == 400
+        response = self.client.post('/api/sales/', self.sale_data_no_key, format='json')
+        assert response.status_code == 400
