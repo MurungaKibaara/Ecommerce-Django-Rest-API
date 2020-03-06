@@ -79,7 +79,7 @@ class SaleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            if user.role is not 'manufacturer' or user.role is not 'trader':
+            if user.role != 'manufacturer' or user.role != 'trader':
                 return Sale.objects.filter(order_id__product_id__owner=user)
             raise PermissionDenied()
         raise PermissionDenied()
@@ -92,7 +92,7 @@ class SaleViewSet(viewsets.ModelViewSet):
                 orders = Order.objects.filter(product_id__owner=user)
                 for order in orders:
                     print("Order Numbers",order.order, data['order_id'])
-                    if order.order != data['order_id'] and order.order_status is not 'cancelled':
+                    if order.order != data['order_id'] and order.order_status != 'cancelled':
                         return
                     return serializer.save(owner=self.request.user)
             raise PermissionDenied()

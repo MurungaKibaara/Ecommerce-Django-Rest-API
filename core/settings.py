@@ -140,11 +140,14 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE':   'django.db.backends.postgresql_psycopg2',
-        'NAME':     'eretail',
-        'USER':     'eretail',
-        'PASSWORD': 'eretailpassword',
-        'HOST':     'localhost',
-        'PORT':     '5432',
+        'NAME':     'postgres',
+        'USER':     'postgres',
+        'PASSWORD': '',
+        'HOST':     'postgres',
+        'PORT':     5432,
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
     }
 }
 

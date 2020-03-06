@@ -1,12 +1,63 @@
-version: '2'
+version: '3'
+
 services:
-  db:
-    image: postgres:9.6
-    environment:
-      - POSTGRES_USER:eretail
-      - POSTGRES_PASSWORD:eretail
-      - POSTGRES_DB:eretail
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./docker/postgresql/data:/var/lib/postgresql/data
+  postgres:
+      restart: always
+      image: postgres:10
+      volumes:
+        - ./pgdata:/var/lib/postgresql/data/
+
+      environment:
+          POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+          # POSTGRES_PASSWORD: eretailpassword
+
+      ports:
+          - "5434:5434"
+  eretail:
+      build:
+        context: .
+        dockerfile: Dockerfile
+
+      volumes:
+        - .:/eretail/
+
+      depends_on:
+        - postgres
+
+      links:
+        - postgres
+      environment:
+          DEBUG: "true"
+          DATABASE_NAME: eretail
+          DATABASE_USER: postgres
+          # DATABASE_PASSWORD: eretailpassword
+          DATABASE_SERVICE_HOST: postgres
+      ports:
+          - "9000:9000"
+      command: bash -c "python /eretail/manage.py migrate && python /eretail/manage.py runserver 0.0.0.0:9000"
+
+volumes:
+    eretail:
+    # pgdata:
+    #     external: true
+
+networks:
+  eretail_network:
+
+
+#
+# nginx:
+#   image: nginx:1.13
+#   ports:
+#     - 8000:80
+#   volumes:
+#     - ./config/nginx/conf.d:/etc/nginx/conf.d
+#   depends_on:
+#     - eretail
+#   networks:
+#     - nginx_network
+#
+# networks:
+#   nginx_network:
+#     driver: bridge
