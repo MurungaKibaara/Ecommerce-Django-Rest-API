@@ -21,7 +21,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
 
@@ -30,7 +31,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user_data_invalid_email = {
@@ -39,7 +41,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassword",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user_data_wrong_password = {
@@ -48,7 +51,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"securepassw",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user_data_no_password = {
@@ -57,7 +61,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"",
-        	"password2":"securepassword"
+        	"password2":"securepassword",
+            "region":"Nairobi"
         }
 
         self.user_data_no_all_password = {
@@ -66,7 +71,8 @@ class TestProduct(APITestCase):
         	"username":"murungaephantus",
         	"name":"Murunga Kibaara",
         	"password":"",
-        	"password2":""
+        	"password2":"",
+            "region":"Nairobi"
         }
 
         self.login_data = {
