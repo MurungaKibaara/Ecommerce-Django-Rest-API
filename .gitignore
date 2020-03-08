@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+# Remove pgdata from repository
+/pgdata/
+pgdata/
+
 # C extensions
 *.so
 

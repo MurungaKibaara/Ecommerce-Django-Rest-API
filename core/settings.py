@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Add third party files
     'rest_framework',
+    'drf_yasg',
     'corsheaders',
     'allauth',
     'allauth.account',
@@ -135,21 +136,39 @@ if 'TRAVIS' in os.environ:
     }
 
 
+
 DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE':   'django.db.backends.postgresql_psycopg2',
-        'NAME':     'postgres',
-        'USER':     'postgres',
-        'PASSWORD': '',
-        'HOST':     'postgres',
+        'NAME':     'eretail',
+        'USER':     'eretail',
+        'PASSWORD': 'eretailpassword',
+        'HOST':     'localhost',
         'PORT':     5432,
         'OPTIONS': {
             'client_encoding': 'UTF8',
         },
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         # 'ENGINE': 'django.db.backends.sqlite3',
+#         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         'ENGINE':   'django.db.backends.postgresql_psycopg2',
+#         'NAME':     'postgres',
+#         'USER':     'postgres',
+#         'PASSWORD': '',
+#         'HOST':     'postgres',
+#         'PORT':     5432,
+#         'OPTIONS': {
+#             'client_encoding': 'UTF8',
+#         },
+#     }
+# }
 
 
 # Password validation
