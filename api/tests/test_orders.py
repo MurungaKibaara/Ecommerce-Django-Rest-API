@@ -86,7 +86,7 @@ class TestOrders(APITestCase):
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
         product = mixer.blend('api.Product', owner=user)
 
-        response = self.client.post('/api/orders/', self.order_data, format='json')
+        response = self.client.post('/api/v1/orders/', self.order_data, format='json')
         assert response.status_code == 403
 
     @pytest.mark.django_db
@@ -96,7 +96,7 @@ class TestOrders(APITestCase):
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
         product = mixer.blend('api.Product', owner=user)
 
-        response = self.client.get('/api/orders/')
+        response = self.client.get('/api/v1/orders/')
         assert response.status_code == 403
 
     @pytest.mark.django_db
@@ -106,5 +106,5 @@ class TestOrders(APITestCase):
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
         product = mixer.blend('api.Product', owner=user)
 
-        response = self.client.post('/api/orders/', self.order_data_key_missing, format='json')
+        response = self.client.post('/api/v1/orders/', self.order_data_key_missing, format='json')
         assert response.status_code == 400

@@ -82,7 +82,7 @@ class TestSales(APITestCase):
 
         datas = json.dumps(self.user_login_data)
 
-        response = self.client.post('/api/sales/', self.sale_data, format='json')
+        response = self.client.post('/api/v1/sales/', self.sale_data, format='json')
         assert response.status_code == 403
 
     @pytest.mark.django_db
@@ -93,7 +93,7 @@ class TestSales(APITestCase):
         product = mixer.blend('api.Product', owner=user)
         order = mixer.blend('api.Order', Product=product, owner=customer)
 
-        response = self.client.get('/api/sales/')
+        response = self.client.get('/api/v1/sales/')
         assert response.status_code == 403
 
     @pytest.mark.django_db
@@ -105,5 +105,5 @@ class TestSales(APITestCase):
 
         datas = json.dumps(self.user_login_data)
 
-        response = self.client.post('/api/sales/', self.sale_data_no_key, format='json')
+        response = self.client.post('/api/v1/sales/', self.sale_data_no_key, format='json')
         assert response.status_code == 400
