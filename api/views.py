@@ -1,34 +1,71 @@
 from rest_framework import viewsets, permissions
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import PermissionDenied
-from .models import Product, Order, Sale
-from .serializers import ProductSerializer, OrderSerializer, SaleSerializer
+from .models import Product, Order, Sale, Category
+from rest_framework import filters
+from .serializers import ProductSerializer, OrderSerializer, SaleSerializer, CategorySerializer
 
 class IsOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.owner == request.user
 
-class ProductViewSet(viewsets.ModelViewSet):
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
-    serializer_class = ProductSerializer
+class CategoryViewSet(viewsets.ModelViewSet):
+
+    serializer_class = CategorySerializer
     permission_classes = (IsOwner,)
 
     def get_queryset(self):
-        '''
-            - Customers and small traders can view all the Products.
-            - Wholesalers and Manufacturers can only view the products they own.
-        '''
+        'All authenticated users can view all categories'
+
+        user = self.request.user
+        if user.is_authenticated:
+            return Category.objects.all()
+        raise PermissionDenied()
+
+
+    def perform_create(self, serializer):
+        ' Only the product owners can create categories '
 
         user = self.request.user
         if user.is_authenticated:
             if user.role == 'customer' or user.role == 'trader':
+                raise PermissionDenied()
+                return False
+            return serializer.save(owner=self.request.user)
+        raise PermissionDenied()
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+
+    serializer_class = ProductSerializer
+    permission_classes = (IsOwner,)
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+
+    def get_queryset(self):
+        'Wholesalers and Manufacturers can only view the products they own.'
+
+        user = self.request.user
+        if user.is_authenticated:
+            if user.role == 'customer' or user.role == 'trader':
+                queryset = Product.objects.all()
+                serializer_class = ProductSerializer
+                filter_backends = [DjangoFilterBackend]
+                filterset_fields = ['pproduct_name', 'product_price']
                 return Product.objects.all()
             return Product.objects.filter(owner=user)
         raise PermissionDenied()
 
 
     def perform_create(self, serializer):
-        ''' Customers and small traders cannot create Products '''
+        ''' Wholesalers and manufacturers can create products '''
 
         user = self.request.user
         if user.is_authenticated:
@@ -39,15 +76,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         raise PermissionDenied()
 
 class OrderViewSet(viewsets.ModelViewSet):
-    '''
-        - Customers and small traders can only view the products they have created.
-        - Manufacturers and wholesalers cannot create orders.
-    '''
+    'Customers and small traders can only view the Orders they have created, while manufacturers and wholesalers cannot create orders.'
 
     serializer_class = OrderSerializer
     permission_classes = (IsOwner,)
-
-
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -68,13 +101,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 class SaleViewSet(viewsets.ModelViewSet):
-    '''
-        - Customers and small traders can only view the products they have created.
-        - Manufacturers and wholesalers cannot create orders.
-    '''
+    'Only product owners can confirm orders'
 
     serializer_class = SaleSerializer
     permission_classes = (IsOwner,)
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         user = self.request.user

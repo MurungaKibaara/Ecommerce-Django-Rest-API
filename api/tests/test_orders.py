@@ -42,6 +42,7 @@ class TestOrders(APITestCase):
         }
 
         self.product_data = {
+            "category":1,
         	"product_name": "5KG Sugar",
             "product_description": "Mumias Sugar",
             "product_price": 110,
@@ -49,6 +50,7 @@ class TestOrders(APITestCase):
         }
 
         self.order_data = {
+            "category":1,
         	"product_id": 1,
             "order_status": "cart",
             "product_price": 110,
@@ -84,6 +86,7 @@ class TestOrders(APITestCase):
 
         user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
+        category = mixer.blend('api.Category', owner=user)
         product = mixer.blend('api.Product', owner=user)
 
         response = self.client.post('/api/v1/orders/', self.order_data, format='json')
@@ -94,6 +97,7 @@ class TestOrders(APITestCase):
 
         user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
+        category = mixer.blend('api.Category', owner=user)
         product = mixer.blend('api.Product', owner=user)
 
         response = self.client.get('/api/v1/orders/')
@@ -104,6 +108,7 @@ class TestOrders(APITestCase):
 
         user = mixer.blend('accounts.User',email='test@test.com', role='manufacturer', password='test',password2='test')
         customer = mixer.blend('accounts.User', role='customer', password='test',password2='test')
+        category = mixer.blend('api.Category', owner=user)
         product = mixer.blend('api.Product', owner=user)
 
         response = self.client.post('/api/v1/orders/', self.order_data_key_missing, format='json')

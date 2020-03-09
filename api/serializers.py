@@ -1,15 +1,19 @@
 from rest_framework import serializers
-from .models import Product, Order, Sale
-
+from .models import Product, Order, Sale, Category
 
 class ChoiceField(serializers.ChoiceField):
     def to_representation(self, obj):
         return self._choices[obj]
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name',)
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('product_id', 'product_name', 'product_description', 'product_quantity', 'product_price')
+        fields = ('product_id','category', 'product_name', 'product_description', 'product_quantity', 'product_price', 'created','featured','updated')
 
 class OrderSerializer(serializers.ModelSerializer):
     order_status = ChoiceField(choices=Order.STATUS)
@@ -17,9 +21,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        depth=1
-        fields = ('order','product_id','order_quantity','order_date','order_status')
-
+        fields = ('order','product_id','order_quantity','created','order_status', 'updated')
 
 class SaleSerializer(serializers.ModelSerializer):
     order_status = ChoiceField(choices=Sale.SALE_STATUS)
@@ -27,4 +29,4 @@ class SaleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sale
-        fields = ('order_id','delivery_id','delivery_date', 'confirm_date','reference','order_status')
+        fields = ('order_id','delivery_id','delivery_date', 'confirm_date','reference','order_status', 'updated')

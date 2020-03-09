@@ -6,13 +6,23 @@ from datetime import datetime, timedelta
 from model_utils import Choices
 from rest_framework.fields import ChoiceField
 
+
+class Category(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, unique=True)
+
 class Product(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     product_id = models.AutoField(primary_key=True)
     product_name = models.TextField(max_length=20)
     product_description = models.TextField(max_length=200)
-    product_price = models.FloatField()
+    product_price = models.DecimalField(max_digits=5, decimal_places=2)
     product_quantity = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    featured = models.BooleanField(default=False)
+    # url = models.URLField(max_length=300)
 
 class Order(models.Model):
     STATUS = Choices(
@@ -26,8 +36,9 @@ class Order(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     order_quantity = models.IntegerField()
-    order_date = models.DateTimeField(default=timezone.now)
     order_status = models.CharField(max_length=10, choices=STATUS)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     REQUIRED_FIELDS = ['product_id','order_status','owner']
 
@@ -45,9 +56,10 @@ class Sale(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     delivery_id =  models.AutoField(primary_key=True)
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
-    confirm_date = models.DateTimeField(default=timezone.now)
+    confirm_date = models.DateTimeField(auto_now_add=True)
     delivery_date = models.DateTimeField(default=order_delivery_date)
     reference = models.CharField(max_length=20, unique=True)
     order_status = models.CharField(max_length=10, choices=SALE_STATUS)
+    updated = models.DateTimeField(auto_now=True)
 
     REQUIRED_FIELDS = ['order_id','owner','order_status']

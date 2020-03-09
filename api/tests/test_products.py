@@ -11,6 +11,8 @@ from ..models import Product
 
 UserModel = get_user_model()
 
+# TODO: UPDATE CATEGORY INFORMATION IN TESTS
+
 class TestProduct(APITestCase):
     def setUp(self):
         self.client = APIClient()
@@ -65,7 +67,12 @@ class TestProduct(APITestCase):
             "region":"Nairobi"
         }
 
+        self.category_data  ={
+        "name":"Food Items",
+        }
+
         self.product_data = {
+            "category":1,
         	"product_name": "1KG Sugar",
             "product_description": "Mumias Sugar",
             "product_price": 198,
@@ -73,12 +80,14 @@ class TestProduct(APITestCase):
         }
 
         self.product_data_no_key = {
+            "category":1,
             "product_description": "Mumias Sugar",
             "product_price": 500,
             "product_quantity": 200
         }
 
         self.product_data_update = {
+            "category":1,
         	"product_name": "1KG Sugar",
             "product_description": "Mumias Sugar",
             "product_price": 500,
@@ -120,6 +129,9 @@ class TestProduct(APITestCase):
     def test_a_registered_user_can_create_a_product(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
+        response1 = self.client.get('/api/v1/categories/')
+        print("Resp: ",response1)
         response = self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'A product has been created')
 
@@ -127,6 +139,7 @@ class TestProduct(APITestCase):
     def test_can_get_created_products(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
         product_resp = self.client.get('/api/v1/products/')
         self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'A product exists')
@@ -135,13 +148,15 @@ class TestProduct(APITestCase):
     def test_dont_update_products_that_dont_exist(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         product_resp = self.client.put('/api/v1/products/1/', data=json.dumps(self.product_data), content_type='application/json')
         self.assertEqual(product_resp.status_code, status.HTTP_404_NOT_FOUND, 'Product does not exist')
-
-    @pytest.mark.django_db
+    #
+    # @pytest.mark.django_db
     def test_can_update_existing_products(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
         product_resp = self.client.put('/api/v1/products/1/', data=json.dumps(self.product_data_update), content_type='application/json')
         self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'Product can be updated')
@@ -150,6 +165,7 @@ class TestProduct(APITestCase):
     def test_dont_create_with_missing_key(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         product_resp = self.client.post('/api/v1/products/', data=json.dumps(self.product_data_no_key), content_type='application/json')
         self.assertEqual(product_resp.status_code, status.HTTP_400_BAD_REQUEST, 'Product can be updated')
 
@@ -169,14 +185,16 @@ class TestProduct(APITestCase):
     def test_return_one_product(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
         product_resp = self.client.get('/api/v1/products/1/')
         self.assertEqual(product_resp.status_code, status.HTTP_200_OK, 'Product can be updated')
 
     @pytest.mark.django_db
-    def test_diffrent_product_owners_read(self):
+    def test_different_product_owners_read(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
 
         token2 = self.create_user2()
@@ -189,6 +207,7 @@ class TestProduct(APITestCase):
     def test_diffrent_product_owners_update(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
 
         token2 = self.create_user2()
@@ -201,14 +220,16 @@ class TestProduct(APITestCase):
     def test_a_user_can_delete_a_product(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
         product_resp = self.client.delete('/api/v1/products/1/')
         self.assertEqual(product_resp.status_code, status.HTTP_204_NO_CONTENT, 'A user can delete a product')
-
+    #
     @pytest.mark.django_db
-    def test_delete_diffrent_owner_products(self):
+    def test_delete_different_owner_products(self):
         token = self.create_user()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
 
         token2 = self.create_user2()
@@ -221,19 +242,22 @@ class TestProduct(APITestCase):
     def test_a_customer_cannot_create_a_product(self):
         token = self.create_user3()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         response = self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'A product cannot be be created')
-
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, 'A product cannot be be created')
+    #
     @pytest.mark.django_db
     def test_a_trader_cannot_create_a_product(self):
         token = self.create_user4()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         response = self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, 'A product cannot be be created')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, 'A product cannot be be created')
 
     @pytest.mark.django_db
     def test_a_wholesaler_can_create_a_product(self):
         token = self.create_user5()
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + token)
+        self.client.post('/api/v1/categories/', data=json.dumps(self.category_data), content_type='application/json')
         response = self.client.post('/api/v1/products/', data=json.dumps(self.product_data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, 'A product cannot be be created')

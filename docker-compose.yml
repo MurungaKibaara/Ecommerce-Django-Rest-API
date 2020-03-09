@@ -39,8 +39,8 @@ services:
 
 volumes:
     eretail:
-    # pgdata:
-    #     external: true
+    pgdata:
+        external: true
 
 networks:
   eretail_network:
