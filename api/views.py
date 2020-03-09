@@ -24,6 +24,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         'All authenticated users can view all categories'
 
+        if  getattr(self, 'swagger_fake_view', False):
+            return Category.objects.none()
+
         user = self.request.user
         if user.is_authenticated:
             return Category.objects.all()
@@ -51,6 +54,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         'Wholesalers and Manufacturers can only view the products they own.'
+
+        if  getattr(self, 'swagger_fake_view', False):
+            return Product.objects.none()
+
+        # return Product.objects.filter(user=self.request.user)
 
         user = self.request.user
         if user.is_authenticated:
@@ -83,6 +91,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
+
+        if  getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
+
         user = self.request.user
         if user.is_authenticated:
             if user.role == 'manufacturer' or user.role == 'wholesaler':
@@ -108,6 +120,9 @@ class SaleViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
+        if  getattr(self, 'swagger_fake_view', False):
+            return Sale.objects.none()
+
         user = self.request.user
         if user.is_authenticated:
             if user.role != 'manufacturer' or user.role != 'trader':
