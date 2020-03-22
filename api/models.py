@@ -13,6 +13,9 @@ class Category(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        return self.name
+
 class Product(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -27,8 +30,8 @@ class Product(models.Model):
     image = models.ImageField(max_length=100, upload_to='images/%Y/%m/%d/', null=True)
     # image = models.ImageField(upload_to=settings.MEDIA_ROOT, null=True, blank=True)
 
-
-
+    def __str__(self):
+        return self.product_name
 
 # Orders - Cart
 class Order(models.Model):

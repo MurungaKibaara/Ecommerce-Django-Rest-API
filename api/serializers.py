@@ -73,9 +73,6 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ('id','name',)
 
-        def __str__(self):
-            return self.name
-
 class ProductSerializer(serializers.ModelSerializer):
     image = Base64ImageField(max_length=None, use_url=True)
 
