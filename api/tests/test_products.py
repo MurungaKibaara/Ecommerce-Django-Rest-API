@@ -95,36 +95,36 @@ class TestProduct(APITestCase):
 
 
         # Products Data including Image Data
+        #
+        # with open('eretail/tests/pil_red.png', 'rb') as img1:
+        #
+        #     imgStringIO1 = Image.open(BytesIO(img1.read()))
 
-        with open('/home/murunga/Desktop/image.jpg', 'rb') as img1:
+        self.product_data = {
+            "category":1,
+        	"product_name": "1KG Sugar",
+            "product_description": "Mumias Sugar",
+            "product_price": 198,
+            "product_quantity": 200,
+            "image": "(imgStringIO1)"
+        }
 
-            imgStringIO1 = Image.open(BytesIO(img1.read()))
+        self.product_data_no_key = {
+            "category":1,
+            "product_description": "Mumias Sugar",
+            "product_price": 500,
+            "product_quantity": 200,
+            "image": "(imgStringIO1)"
+        }
 
-            self.product_data = {
-                "category":1,
-            	"product_name": "1KG Sugar",
-                "product_description": "Mumias Sugar",
-                "product_price": 198,
-                "product_quantity": 200,
-                "image": (imgStringIO1)
-            }
-
-            self.product_data_no_key = {
-                "category":1,
-                "product_description": "Mumias Sugar",
-                "product_price": 500,
-                "product_quantity": 200,
-                "image": (imgStringIO1)
-            }
-
-            self.product_data_update = {
-                "category":1,
-            	"product_name": "1KG Sugar",
-                "product_description": "Mumias Sugar",
-                "product_price": 500,
-                "product_quantity": 200,
-                "image": (imgStringIO1)
-            }
+        self.product_data_update = {
+            "category":1,
+        	"product_name": "1KG Sugar",
+            "product_description": "Mumias Sugar",
+            "product_price": 500,
+            "product_quantity": 200,
+            "image": "(imgStringIO1)"
+        }
 
 
     @pytest.mark.django_db
