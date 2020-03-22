@@ -151,27 +151,27 @@ if 'TRAVIS' in os.environ:
 
 
 
-DATABASES = {
-    'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE':   'django.db.backends.postgresql_psycopg2',
-        'NAME':     'eretail',
-        'USER':     'eretail',
-        'PASSWORD': 'eretailpassword',
-        'HOST':     'localhost',
-        'PORT':     5432,
-        'OPTIONS': {
-            'client_encoding': 'UTF8',
-        },
-    }
-}
+# DATABASES = {
+#     'default': {
+#         # 'ENGINE': 'django.db.backends.sqlite3',
+#         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         'ENGINE':   'django.db.backends.postgresql_psycopg2',
+#         'NAME':     'eretail',
+#         'USER':     'eretail',
+#         'PASSWORD': 'eretailpassword',
+#         'HOST':     'localhost',
+#         'PORT':     5432,
+#         'OPTIONS': {
+#             'client_encoding': 'UTF8',
+#         },
+#     }
+# }
 
 # HEROKU DATABASE SETTINGS
 
-# import dj_database_url
+import dj_database_url
 
-# DATABASES = {'default': dj_database_url.config()}
+DATABASES = {'default': dj_database_url.config()}
 
 
 # DATABASES = {
