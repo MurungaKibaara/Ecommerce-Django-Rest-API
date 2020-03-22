@@ -7,6 +7,8 @@ from model_utils import Choices
 from rest_framework.fields import ChoiceField
 
 
+# Product Related
+
 class Category(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True)
@@ -22,8 +24,13 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     featured = models.BooleanField(default=False)
-    # url = models.URLField(max_length=300)
+    image = models.ImageField(max_length=100, upload_to='images/%Y/%m/%d/', null=True)
+    # image = models.ImageField(upload_to=settings.MEDIA_ROOT, null=True, blank=True)
 
+
+
+
+# Orders - Cart
 class Order(models.Model):
     STATUS = Choices(
         ('cart', 'cart'),
@@ -42,6 +49,9 @@ class Order(models.Model):
 
     REQUIRED_FIELDS = ['product_id','order_status','owner']
 
+
+
+# Order-Processing -- Sales
 class Sale(models.Model):
 
     def order_delivery_date():
