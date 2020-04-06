@@ -38,3 +38,4 @@ urlpatterns = [
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html', 'yaml'])
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
