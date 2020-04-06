@@ -81,6 +81,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = ProductSerializer()
         parser_classes = (MultiPartParser, JSONParser)
 
+        serializer = ProductSerializer(data=self.request.data)
         user = self.request.user
         if user.is_authenticated:
             if user.role == 'customer' or user.role =='trader':
