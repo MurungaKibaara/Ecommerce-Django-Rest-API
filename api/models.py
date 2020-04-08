@@ -27,7 +27,7 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     featured = models.BooleanField(default=False)
-    image = models.ImageField(max_length=100, upload_to='images/%Y/%m/%d/', null=True)
+    image = models.ImageField(max_length=100, upload_to=settings.MEDIA_ROOT+'images/%Y/%m/%d/', null=True)
     # image = models.ImageField(upload_to=settings.MEDIA_ROOT, null=True, blank=True)
 
     def __str__(self):
