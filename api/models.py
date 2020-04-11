@@ -1,15 +1,15 @@
+''' Application Models '''
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
-from datetime import datetime, timedelta
 from model_utils import Choices
-from rest_framework.fields import ChoiceField
 
 
 # Product Related
 
 class Category(models.Model):
+    '''Category Model'''
+
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True)
 
@@ -17,6 +17,7 @@ class Category(models.Model):
         return self.name
 
 class Product(models.Model):
+    '''Products Model'''
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     product_id = models.AutoField(primary_key=True)
@@ -27,14 +28,16 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     featured = models.BooleanField(default=False)
-    image = models.ImageField(max_length=100, upload_to=settings.MEDIA_ROOT+'images/%Y/%m/%d/', null=True)
-    # image = models.ImageField(upload_to=settings.MEDIA_ROOT, null=True, blank=True)
+    image = models.ImageField(max_length=100,
+                              upload_to=settings.MEDIA_ROOT+'images/%Y/%m/%d/', null=True)
 
     def __str__(self):
         return self.product_name
 
 # Orders - Cart
 class Order(models.Model):
+    '''Orders Model'''
+
     STATUS = Choices(
         ('cart', 'cart'),
         ('confirmed', 'confirmed'),
@@ -50,14 +53,16 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    REQUIRED_FIELDS = ['product_id','order_status','owner']
+    REQUIRED_FIELDS = ['product_id', 'order_status', 'owner']
 
 
 
 # Order-Processing -- Sales
 class Sale(models.Model):
+    '''Sales Model'''
 
     def order_delivery_date():
+        ''' Delivery Time'''
         return timezone.now() + timezone.timedelta(days=7)
 
     SALE_STATUS = Choices(
@@ -67,7 +72,7 @@ class Sale(models.Model):
         ('cancelled', 'cancelled'),)
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    delivery_id =  models.AutoField(primary_key=True)
+    delivery_id = models.AutoField(primary_key=True)
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
     confirm_date = models.DateTimeField(auto_now_add=True)
     delivery_date = models.DateTimeField(default=order_delivery_date)
@@ -75,4 +80,4 @@ class Sale(models.Model):
     order_status = models.CharField(max_length=10, choices=SALE_STATUS)
     updated = models.DateTimeField(auto_now=True)
 
-    REQUIRED_FIELDS = ['order_id','owner','order_status']
+    REQUIRED_FIELDS = ['order_id', 'owner', 'order_status']
